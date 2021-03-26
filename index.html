@@ -22,7 +22,7 @@
     <script>
         //load products
         const loadProducts = () => {
-            fetch('/products')
+            fetch(`/products`)
                 .then(res => res.json())
                 .then(products => {
                     // console.log(products);
@@ -31,7 +31,7 @@
                         const li = document.createElement('li');
                         li.innerHTML = ` Product Name: <strong> ${product.name} </strong> Price: ${product.price} Quantity: ${product.quantity};
                         <button onclick = "updateProduct('${product._id}')">Update</button> 
-                        <button onclick = "deleteProduct('${product._id}')">Delete</button> <br><br>
+                        <button onclick = "deleteProduct(event,'${product._id}')">Delete</button> <br><br>
                         `
                         container.appendChild(li);
                     });
@@ -46,22 +46,49 @@
                     // console.log('result', data);
                     document.getElementById('product').innerHTML = `
                     <h3>id ${data._id}</h3>
-                   Price: <input type="text" value=${data.price} id = "price"><br>
+                    Price: <input type="text" value=${data.price} id = "price"><br>
                     Quantity: <input type="text" value=${data.quantity} id = "quantity"><br> 
-                    <button>Submit</button>
+                    <button onclick = "updateButton('${data._id}')">Submit</button>
                     `
                 })
         }
 
-        function deleteProduct(id) {
+        function updateButton(id) {
+            // console.log('I am working')
+            const price = document.getElementById('price').value;
+            const quantity = document.getElementById('quantity').value;
+            const product = {
+                id,
+                price,
+                quantity
+            };
+            // console.log('hedar id:', id);
+            // console.log(product);
+            fetch(`/update/${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('updated');
+                })
+        }
+
+        function deleteProduct(event, id) {
             // console.log('button is working');
-            // console.log(_id);
+            // console.log(event.target.parentNode);
             fetch(`/delete/${id}`, {
                     method: 'DELETE'
                 })
                 .then(res => res.json())
                 .then(result => {
-                    console.log('Deleted Successfully', result);
+                    // console.log('Deleted Successfully', result);
+                    if (result) {
+                        event.target.parentNode.style.display = 'none';
+                    }
                 })
         }
     </script>

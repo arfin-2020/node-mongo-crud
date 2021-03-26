@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
 
 client.connect(err => {
     const productCollection = client.db("firstproject").collection("product");
+
     //get 
     app.get('/products', (req, res) => {
             productCollection.find({})
@@ -37,25 +38,30 @@ client.connect(err => {
             productCollection.insertOne(product)
                 .then(result => {
                     console.log('data added suceessfully.');
-                    res.send('successful');
+                    // res.send('successful');
+                    res.redirect('/');
                 })
         })
-        //Delete
+        //update products
+    app.patch('/update/:id', (req, res) => {
+        // console.log(req.body.price);
+        productCollection.updateOne({ _id: ObjectId(req.params.id) }, {
+                $set: { price: req.body.price, quantity: req.body.quantity }
+            })
+            .then(result => {
+                console.log(result);
+            })
+    })
+
+    //Delete
     app.delete("/delete/:id", (req, res) => {
         console.log("id: ", req.params.id);
         productCollection.deleteOne({ _id: ObjectId(req.params.id) })
             .then(result => {
-                console.log('getID', result);
+                // console.log('getID', result);
+                res.send(result.deletedCount > 0);
             })
     })
-
-
-
-
-
-
-
-
 
     // const collection = client.db("firstproject").collection("product");
     // const product = { name: "Apple", price: 35, quantity: 20 };
