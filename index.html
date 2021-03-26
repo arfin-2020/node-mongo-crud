@@ -27,6 +27,7 @@
                 .then(products => {
                     // console.log(products);
                     const container = document.getElementById('products')
+                    container.innerHTML = '';
                     products.forEach(product => {
                         const li = document.createElement('li');
                         li.innerHTML = ` Product Name: <strong> ${product.name} </strong> Price: ${product.price} Quantity: ${product.quantity};
@@ -72,8 +73,12 @@
                     body: JSON.stringify(product)
                 })
                 .then(res => res.json())
-                .then(data => {
-                    console.log('updated');
+                .then(result => {
+                    // console.log('updated');
+                    if (result) {
+                        loadProducts();
+                        document.getElementById('product').innerHTML = '';
+                    }
                 })
         }
 
