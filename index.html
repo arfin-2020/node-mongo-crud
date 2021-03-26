@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Look Mom I have a mongo Database.</h1>
+    <form action="/addProduct" method="post">
+        <input type="text" placeholder="product name" name='name'>
+        <input type="text" placeholder="price" name='price'>
+        <input type="text" placeholder="quantity" name='quantity'>
+        <button type="submit">AddProduct</button><br><br>
+    </form>
+    <div id="products">
+    </div>
+    <div id="product"></div>
+    <script>
+        //load products
+        const loadProducts = () => {
+            fetch('/products')
+                .then(res => res.json())
+                .then(products => {
+                    // console.log(products);
+                    const container = document.getElementById('products')
+                    products.forEach(product => {
+                        const li = document.createElement('li');
+                        li.innerHTML = ` Product Name: <strong> ${product.name} </strong> Price: ${product.price} Quantity: ${product.quantity};
+                        <button onclick = "updateProduct('${product._id}')">Update</button> 
+                        <button onclick = "deleteProduct('${product._id}')">Delete</button> <br><br>
+                        `
+                        container.appendChild(li);
+                    });
+                })
+        }
+        loadProducts();
+
+        function updateProduct(id) {
+            fetch(`/product/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    // console.log('result', data);
+                    document.getElementById('product').innerHTML = `
+                    <h3>id ${data._id}</h3>
+                   Price: <input type="text" value=${data.price} id = "price"><br>
+                    Quantity: <input type="text" value=${data.quantity} id = "quantity"><br> 
+                    <button>Submit</button>
+                    `
+                })
+        }
+
+        function deleteProduct(id) {
+            // console.log('button is working');
+            // console.log(_id);
+            fetch(`/delete/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(result => {
+                    console.log('Deleted Successfully', result);
+                })
+        }
+    </script>
+</body>
+
+</html>
